@@ -8,20 +8,34 @@ Fetch new documents from Glean and store them raw in `_inbox/`. This skill only 
 
 Read `~/.claude/lethe-config.json` → `vault_path`.
 
+If `~/.claude/lethe-config.json` does not exist, tell the user: "No Lethe vault configured. Run `lethe-setup` first." Then stop.
+
+---
+
+## Precondition: Verify Glean MCP
+
+Check that the Glean MCP tool is available in this session. If it is not available or returns an auth error, tell the user: "Glean MCP is not available. Check that it is configured and authenticated, then retry." Then stop.
+
 ---
 
 ## Step 1: Read sweep state
 
-Read `[vault_path]/_sweep-state.json`.
+Read `"[vault_path]/_sweep-state.json"`.
 
-- If `last_sweep` is `null` → this is the first sweep, fetch all available documents
-- Otherwise → fetch documents updated after `last_sweep`
+- If `last_sweep` is `null` → this is the first sweep. Ask the user:
+  > "This is your first sweep. How far back should I fetch? Options: 7 days / 30 days / 90 days / specify a date"
+  
+  Wait for their answer. Use their chosen start date as the lower bound for all queries.
+
+- Otherwise → fetch documents updated after `last_sweep`.
 
 ---
 
 ## Step 2: Query Glean
 
-Use the Glean MCP tool. Query across all source types. Fan out in parallel using subagents if available:
+Use the Glean MCP tool. Query across all source types. Fan out in parallel using subagents if available.
+
+Build queries from `_index.md` context: use the user's team name and active project names as query terms to focus results. Do not attempt to fetch all company-wide content.
 
 | Source | What it covers |
 |--------|---------------|
@@ -30,8 +44,6 @@ Use the Glean MCP tool. Query across all source types. Fan out in parallel using
 | `confluence` | Confluence pages |
 | `google-meet` | Meeting transcripts and notes |
 | `calendar` | Calendar events with meeting notes |
-
-Use `_index.md` context (role, team, active projects) to focus queries on relevant content. Do not fetch unrelated company-wide content.
 
 ---
 
@@ -44,7 +56,7 @@ For each document returned by Glean:
 - The document is a calendar invite with no body/notes
 - The document is an automated notification with no substantive content
 
-**Otherwise, write to `[vault_path]/_inbox/[YYYY-MM-DD]-[source_type]-[slug].md`:**
+**Otherwise, write to `"[vault_path]/_inbox/[YYYY-MM-DD]-[source_type]-[slug].md"`:**
 
 Where `[slug]` is the document title sanitized to lowercase-hyphenated form (max 50 chars).
 
@@ -63,7 +75,7 @@ ingested: [today YYYY-MM-DD]
 
 ## Step 4: Update sweep state
 
-Write to `[vault_path]/_sweep-state.json`:
+Write to `"[vault_path]/_sweep-state.json"`:
 ```json
 {
   "last_sweep": "[ISO 8601 timestamp, e.g. 2026-04-19T09:00:00Z]",
@@ -76,8 +88,8 @@ Write to `[vault_path]/_sweep-state.json`:
 ## Step 5: Commit and report
 
 ```bash
-git -C [vault_path] add _inbox/ _sweep-state.json
-git -C [vault_path] commit -m "lethe: sweep [YYYY-MM-DD] — [N] documents ingested"
+git -C "[vault_path]" add _inbox/ _sweep-state.json
+git -C "[vault_path]" commit -m "lethe: sweep [YYYY-MM-DD] — [N] documents ingested"
 ```
 
 Tell the user:

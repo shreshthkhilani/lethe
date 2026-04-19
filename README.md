@@ -31,10 +31,7 @@ cd lethe
 
 **2. Create your vault**
 
-Open Claude Code in any directory and invoke the `lethe-setup` skill:
-```
-/lethe-setup
-```
+Open Claude Code in any directory and invoke the `lethe-setup` skill by typing its name:
 
 Follow the interactive prompts. Takes ~5 minutes.
 
@@ -48,10 +45,7 @@ In any Claude Code session, you can now:
 
 **4. Sweep from Glean** *(work machine only)*
 
-```
-/lethe-sweep
-/lethe-compile
-```
+Invoke the `lethe-sweep` skill, then `lethe-compile`.
 
 Or let the cron handle it automatically.
 

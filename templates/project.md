@@ -1,6 +1,6 @@
 ---
 type: project
-status: active
+status: active  # active | blocked | completed | archived
 owner: ""
 stakeholders: []
 related: []

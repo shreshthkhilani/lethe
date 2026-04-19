@@ -9,7 +9,20 @@ Read `~/.claude/lethe-config.json` to get the vault path:
 {"vault_path": "/your/chosen/path/lethe-river"}
 ```
 
-All paths below are relative to this `vault_path`.
+If `~/.claude/lethe-config.json` does not exist, tell the user: "No Lethe vault configured. Run `lethe-setup` to create one." Then stop.
+
+All paths below are relative to `vault_path`.
+
+---
+
+## Wiki-Link Format
+
+All cross-references use Obsidian-style wiki-links. Two canonical forms:
+
+- **Link to a specific file:** `"[[projects/project-phoenix/decision-auth]]"` (no `.md` extension)
+- **Link to a project or area overview:** `"[[projects/project-phoenix]]"` — this resolves to `projects/project-phoenix/overview.md`
+
+Always use the shortest unambiguous form. When in doubt, link to the specific file.
 
 ---
 
@@ -30,7 +43,7 @@ Load context proactively when the conversation implies a relevant domain. Do not
 
 **Ripgrep for type + status** when:
 - Cross-cutting query: "what are my active risks", "what projects are blocked"
-- Use: `rg "type: risk" [vault_path] -l` then filter by status field
+- Use: `rg "type: risk" "[vault_path]" -l` then filter by status field
 
 **One-hop traversal:**
 When loading any file, also load files referenced in these frontmatter fields: `related`, `related_decisions`, `related_risks`, `stakeholders`, `owner`.
@@ -56,14 +69,15 @@ When the user asks you to remember, capture, or save something:
    - Team-scoped → `areas/[team-slug]/`
    - Reference/style/runbook → `resources/[topic-slug]/`
 3. Check if a file already exists for this topic. If so, update it. If not, create from the appropriate template in `_templates/`.
-4. Write the file with correct YAML frontmatter and wiki-links to related files.
-5. Set `updated: [today's date]`
-6. Commit:
+4. **Slug collision:** if a file with the intended slug already exists for a different topic, disambiguate: `decision-auth-oauth.md` vs `decision-auth-saml.md`. Never overwrite an unrelated file.
+5. Write the file with correct YAML frontmatter and wiki-links to related files.
+6. Set `updated: [today's date]`
+7. Commit:
 ```bash
-git -C [vault_path] add -A
-git -C [vault_path] commit -m "lethe: capture [topic]"
+git -C "[vault_path]" add -A
+git -C "[vault_path]" commit -m "lethe: capture [topic]"
 ```
-7. Tell the user: "Captured to `[relative path]`."
+8. Tell the user: "Captured to `[relative path]`."
 
 ---
 
@@ -74,7 +88,7 @@ At the end of a Q&A conversation that produced useful output (a risk analysis, a
 1. Synthesize the conversation into a structured document — NOT a transcript
 2. Determine the type. If it doesn't map cleanly to project/decision/risk/person/area, use `type: resource, category: reference`
 3. Write to the appropriate vault location
-4. Commit: `git -C [vault_path] add -A && git -C [vault_path] commit -m "lethe: file output [topic]"`
+4. Commit: `git -C "[vault_path]" add -A && git -C "[vault_path]" commit -m "lethe: file output [topic]"`
 5. Tell the user: "Filed to `[relative path]`."
 
 ---
@@ -94,8 +108,6 @@ At the end of a Q&A conversation that produced useful output (a risk analysis, a
 **risk:** `type`, `status` (open|accepted|mitigated), `related_projects[]`, `related_areas[]`, `tags[]`, `updated`
 
 **self:** Special case — `resources/self.md` uses `type: person` and tracks the user's own achievements, growth areas, and notable work in `## Log` entries. Created by `lethe-setup`.
-
-**Wiki-links format:** `"[[relative/path/from/vault-root/filename]]"` (no `.md` extension)
 
 ---
 
