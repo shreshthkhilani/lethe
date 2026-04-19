@@ -1,8 +1,12 @@
 # Lethe
 
-A personal knowledge system for staff engineers. Stores context that would otherwise live only in your head — projects, stakeholders, domain knowledge, decisions, risks, communication style — and makes it available to Claude and other AI agents.
+A personal knowledge system for engineers and engineering leaders. Stores context that would otherwise live only in your head — projects, stakeholders, domain knowledge, decisions, risks, communication style — and makes it available to Claude and other AI agents.
 
-The name is intentionally ironic: Lethe is the river of forgetfulness in Greek mythology.
+<p align="center">
+  <img src="static/lethe.png" alt="Lethe" width="400" />
+  <br/>
+  <em>Lethe, the underworld river of oblivion, is a personal knowledge system to help engineers and engineering leaders remember everything.</em>
+</p>
 
 ---
 
@@ -31,7 +35,7 @@ cd lethe
 
 **2. Create your vault**
 
-Open Claude Code in any directory and invoke the `lethe-setup` skill by typing its name:
+Open Claude Code in any directory and invoke the `lethe-setup` skill by typing its name.
 
 Follow the interactive prompts. Takes ~5 minutes.
 
@@ -43,7 +47,7 @@ In any Claude Code session, you can now:
 - Ask "what are my active risks?" → Claude greps your vault and answers
 - End a Q&A session → ask Claude to file the output back to the vault
 
-**4. Sweep from Glean** *(work machine only)*
+**4. Sweep from Glean** *(requires Glean MCP)*
 
 Invoke the `lethe-sweep` skill, then `lethe-compile`.
 
@@ -82,7 +86,7 @@ Decisions and risks live inside the project or area that owns them — not in to
 
 **This repo (Lethe)** — the system. Skills, templates, install script. Clone this on any machine.
 
-**Your vault (Lethe River)** — your data. Created by `lethe-setup`. Private git repo. Never pushed to a public remote. Separate instance per machine — work context at work, personal context at home.
+**Your vault (Lethe River)** — your data. Created by `lethe-setup`. Private git repo. Never pushed to a public remote.
 
 ---
 
