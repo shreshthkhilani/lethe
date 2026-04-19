@@ -12,14 +12,26 @@ A personal knowledge system for engineers and engineering leaders. Stores contex
 
 ## Lifecycle
 
-```
-INSTALL          SETUP             DAILY USE               AUTOMATED CYCLES
-────────────     ─────────────     ─────────────────────   ──────────────────────
-install.sh   →  lethe-setup    →  lethe-lookup            lethe-sweep  (daily)
-copies skills    creates vault     explicit capture      ↓  lethe-compile (daily)
-to ~/.claude/    seeds _index      Q&A + output filing   ↓  lethe-lint  (nightly)
-skills/          seeds CLAUDE.md   passive via CLAUDE.md    reports → _inbox/
-                 configures crons
+```mermaid
+flowchart LR
+    subgraph INSTALL
+        A["install.sh\ncopies skills\nto ~/.claude/skills/"]
+    end
+    subgraph SETUP
+        B["lethe-setup\ncreates vault\nseeds _index\nseeds CLAUDE.md\nconfigures crons"]
+    end
+    subgraph DAILY["DAILY USE"]
+        C["lethe-lookup\nexplicit capture\nQ&A + output filing\npassive via CLAUDE.md"]
+    end
+    subgraph AUTOMATED["AUTOMATED CYCLES"]
+        D["lethe-sweep\ndaily"]
+        E["lethe-compile\ndaily"]
+        F["lethe-lint\nnightly\nreports → _inbox/"]
+        D --> E
+        E -.-> F
+    end
+
+    A --> B --> C
 ```
 
 ---
