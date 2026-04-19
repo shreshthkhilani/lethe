@@ -30,7 +30,7 @@ Load context proactively when the conversation implies a relevant domain. Do not
 
 **Ripgrep for type + status** when:
 - Cross-cutting query: "what are my active risks", "what projects are blocked"
-- Use: `grep -rl "type: risk" [vault_path] --include="*.md"` then filter by status
+- Use: `rg "type: risk" [vault_path] -l` then filter by status field
 
 **One-hop traversal:**
 When loading any file, also load files referenced in these frontmatter fields: `related`, `related_decisions`, `related_risks`, `stakeholders`, `owner`.
