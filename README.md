@@ -10,29 +10,15 @@ A personal knowledge system for engineers and engineering leaders. Stores contex
 
 ---
 
-## Lifecycle
+## Skills
 
-```mermaid
-flowchart LR
-    subgraph INSTALL
-        A["install.sh\ncopies skills\nto ~/.claude/skills/"]
-    end
-    subgraph SETUP
-        B["lethe-setup\ncreates vault\nseeds _index\nseeds CLAUDE.md\nconfigures crons"]
-    end
-    subgraph DAILY["DAILY USE"]
-        C["lethe-lookup\nexplicit capture\nQ&A + output filing\npassive via CLAUDE.md"]
-    end
-    subgraph AUTOMATED["AUTOMATED CYCLES"]
-        D["lethe-sweep\ndaily"]
-        E["lethe-compile\ndaily"]
-        F["lethe-lint\nnightly\nreports → _inbox/"]
-        D --> E
-        E -.-> F
-    end
-
-    A --> B --> C
-```
+| Skill | When | What it does |
+|-------|------|-------------|
+| `lethe-setup` | Once, on a new machine | Creates your vault, walks through guided questions to seed it, configures crons |
+| `lethe-lookup` | Every session (automatic) | Loads relevant context silently; captures when you say "remember this"; files output at the end of a Q&A |
+| `lethe-sweep` | Daily or on-demand | Fetches new docs from Glean into `_inbox/` |
+| `lethe-compile` | After every sweep | Reads `_inbox/`, extracts people, projects, decisions, and risks; writes structured notes to the vault |
+| `lethe-lint` | Nightly (cron) | Health checks — stale notes, broken links, orphans, connection candidates. Report lands in `_inbox/` |
 
 ---
 
@@ -79,18 +65,6 @@ your-vault/
 ```
 
 Decisions and risks live inside the project or area that owns them — not in top-level folders. Type is in the frontmatter.
-
----
-
-## Skills
-
-| Skill | Purpose | When to invoke |
-|-------|---------|----------------|
-| `lethe-setup` | Create vault on a new machine | Once, after install |
-| `lethe-lookup` | Read/write during work | Automatically by Claude; or explicitly to capture |
-| `lethe-sweep` | Fetch new docs from Glean into `_inbox/` | Daily (cron) or on-demand |
-| `lethe-compile` | Process `_inbox/` into vault entries | After sweep |
-| `lethe-lint` | Health checks — stale notes, broken links, connections | Nightly (cron) |
 
 ---
 
