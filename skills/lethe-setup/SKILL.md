@@ -151,25 +151,51 @@ git -C "$VAULT_PATH" push -u origin main
 ## Step 8: Configure crons (optional)
 
 Ask:
-> "Would you like to set up automated cron schedules?
+> "Would you like to set up automated cron schedules using system cron?
 > - **Daily sweep + compile** — fetches new docs from Glean each morning and compiles them into the vault
 > - **Nightly lint** — health checks while you sleep, report waiting for you in the morning
 >
 > Options: both / sweep-only / lint-only / skip"
 
-**Note:** Remote cron agents run in Anthropic's cloud and require vault access via a GitHub repo. If no remote is configured, warn the user that crons will not work until the vault is pushed to GitHub, and suggest configuring the remote first or skipping crons for now.
+If they choose any crons:
 
-If they choose any crons, use Claude Code's `/schedule` system to configure them. Then write `$VAULT_PATH/_crons.md`:
+**1. Find the full path to the `claude` CLI:**
+```bash
+which claude
+```
+Call this `CLAUDE_BIN`. Cron has a minimal PATH, so the full path is required.
+
+**2. Create the logs directory:**
+```bash
+mkdir -p "$VAULT_PATH/logs"
+```
+
+**3. Add entries to the user's crontab** (cron times are local — default to America/New_York unless user specifies otherwise):
+
+For **lint-only** (nightly 2:00am):
+```bash
+(crontab -l 2>/dev/null; echo "# Lethe River — lint"; echo "0 2 * * * $CLAUDE_BIN -p \"Use the lethe-lint skill to run a health check on my vault.\" --dangerously-skip-permissions >> \"$VAULT_PATH/logs/lethe-lint.log\" 2>&1") | crontab -
+```
+
+For **sweep + compile** (daily 8:00am):
+```bash
+(crontab -l 2>/dev/null; echo "# Lethe River — sweep+compile"; echo "0 8 * * * $CLAUDE_BIN -p \"Use the lethe-sweep skill to fetch new docs, then use the lethe-compile skill to ingest them.\" --dangerously-skip-permissions >> \"$VAULT_PATH/logs/lethe-sweep.log\" 2>&1") | crontab -
+```
+
+Run only the entries matching what the user chose.
+
+**4. Write `$VAULT_PATH/_crons.md`** showing the actual configured entries:
 
 ```markdown
 # Configured Cron Schedules
 
-(Informational only — live schedules managed via /schedule in Claude Code)
+Managed via system crontab. To view: `crontab -l`. To edit: `crontab -e`.
+Logs at: `[vault_path]/logs/`
 
-| Job | Schedule | Skill |
-|-----|----------|-------|
-| sweep + compile | daily 8:00am | lethe-sweep → lethe-compile |
-| lint | nightly 2:00am | lethe-lint |
+| Job | Schedule | Command |
+|-----|----------|---------|
+| lint | nightly 2:00am | `claude -p "Use the lethe-lint skill..."` |
+| sweep + compile | daily 8:00am | `claude -p "Use the lethe-sweep skill..."` |
 ```
 
 Adjust table to reflect only what was actually configured.
