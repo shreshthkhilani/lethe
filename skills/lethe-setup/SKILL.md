@@ -101,7 +101,7 @@ When working with the user in any Claude Code session, passively watch for conte
 
 - If a **decision** is made within the user's scope of work, write a `decision-[slug].md` file to the owning project or area folder (`type: decision`)
 - If a **risk** is identified within the user's scope of work, write a `risk-[slug].md` file to the owning project or area folder (`type: risk`)
-- If a **new person or stakeholder** is mentioned with context about their role, create or update their file at `resources/[team]/[name-slug].md` (`type: person`)
+- If a **new person** is mentioned who is a confirmed colleague AND whose role and team are known, create or update their file at `resources/[team]/[name-slug].md` (`type: person`). If role or team is unknown, ask before capturing. Never create a person file from a name mention alone.
 - If a **noteworthy project fact** surfaces (status change, blocker, key decision), update the relevant project's `overview.md`
 
 Do NOT capture decisions or risks from external articles, third-party documentation, or general industry discussion — only from the user's active work context.
@@ -140,6 +140,12 @@ git -C "$VAULT_PATH" add -A
 git -C "$VAULT_PATH" commit -m "lethe: initial vault setup"
 ```
 
+The vault is local by default — no push is needed. If the user wants a GitHub remote, they can add it later:
+```bash
+git -C "$VAULT_PATH" remote add origin https://github.com/ORG/REPO
+git -C "$VAULT_PATH" push -u origin main
+```
+
 ---
 
 ## Step 8: Configure crons (optional)
@@ -150,6 +156,8 @@ Ask:
 > - **Nightly lint** — health checks while you sleep, report waiting for you in the morning
 >
 > Options: both / sweep-only / lint-only / skip"
+
+**Note:** Remote cron agents run in Anthropic's cloud and require vault access via a GitHub repo. If no remote is configured, warn the user that crons will not work until the vault is pushed to GitHub, and suggest configuring the remote first or skipping crons for now.
 
 If they choose any crons, use Claude Code's `/schedule` system to configure them. Then write `$VAULT_PATH/_crons.md`:
 
